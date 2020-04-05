@@ -14,13 +14,12 @@ int main() {
 
 
 
-   //
+    int N = 20000000;
 
-
-    std::array<int,2000000>  arr;
+    std::vector<int>  arr;
     std::srand(std::time(nullptr));
-    for(int i = 0; i< arr.size(); i++) {
-        arr[i] = std::rand() % 100;
+    for(int i = 0; i< N; i++) {
+        arr.push_back(std::rand() % 100);
     }
 
     milliseconds start = duration_cast< milliseconds >(
