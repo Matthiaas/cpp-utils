@@ -15,6 +15,8 @@ int main() {
 
 
     int N = 20000000;
+    // Should be between 1 and 100;
+    int push_threshold = 50;
 
     std::vector<int>  arr;
     std::srand(std::time(nullptr));
@@ -28,7 +30,7 @@ int main() {
     std::queue<int> std_q;
     for(int i = 0; i< arr.size(); i++) {
         int r = arr[i];
-        if(r< 50) {
+        if(r < push_threshold) {
             std_q.push(r);
         } else {
             size_t size = std_q.size();
@@ -53,7 +55,7 @@ int main() {
     Queue<int,100,5> q;
     for(int i = 0; i< arr.size(); i++) {
         int r = arr[i];
-        if(r& 1  || q.size() == 0) {
+        if(r < push_threshold) {
             q.push(r);
         } else {
             size_t size = q.size();
