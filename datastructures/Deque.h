@@ -120,8 +120,8 @@ class Deque {
 
 private:
     T** map;
-    std::pair<size_t ,size_t> begin = {begin_map_size/2,0};
-    std::pair<size_t, size_t> end = {begin_map_size/2, 0};
+    std::pair<size_t ,size_t> begin = {0,0};
+    std::pair<size_t, size_t> end = {0, 0};
     int count = 0;
     int map_size = begin_map_size;
 };
