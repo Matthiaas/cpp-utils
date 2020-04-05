@@ -9,14 +9,16 @@
 
 using namespace std::chrono;
 
+using data_type = std::array<long,10000>;
 
 int main() {
 
 
 
-    int N = 20000000;
+    int N = 10000;
     // Should be between 1 and 100;
-    int push_threshold = 50;
+    int push_threshold = 70;
+    data_type data;
 
     std::vector<int>  arr;
     std::srand(std::time(nullptr));
@@ -27,16 +29,18 @@ int main() {
     milliseconds start = duration_cast< milliseconds >(
             system_clock::now().time_since_epoch()
     );
-    std::queue<int> std_q;
-    for(int i = 0; i< arr.size(); i++) {
-        int r = arr[i];
-        if(r < push_threshold) {
-            std_q.push(r);
-        } else {
-            size_t size = std_q.size();
-            if( size > 0) {
-                int a = std_q.front();
-                std_q.pop();
+    {
+        std::queue<data_type> std_q;
+        for(int i = 0; i< arr.size(); i++) {
+            int r = arr[i];
+            if(r < push_threshold) {
+                std_q.push(data);
+            } else {
+                size_t size = std_q.size();
+                if( size > 0) {
+                    data_type a = std_q.front();
+                    std_q.pop();
+                }
             }
         }
     }
@@ -52,16 +56,18 @@ int main() {
     start = duration_cast< milliseconds >(
             system_clock::now().time_since_epoch()
     );
-    Queue<int,100,5> q;
-    for(int i = 0; i< arr.size(); i++) {
-        int r = arr[i];
-        if(r < push_threshold) {
-            q.push(r);
-        } else {
-            size_t size = q.size();
-            if( size > 0) {
-                int a = q.front();
-                q.pop();
+    {
+        Queue<data_type,5> q;
+        for(int i = 0; i< arr.size(); i++) {
+            int r = arr[i];
+            if(r < push_threshold) {
+                q.push(data);
+            } else {
+                size_t size = q.size();
+                if( size > 0) {
+                    data_type a = q.front();
+                    q.pop();
+                }
             }
         }
     }

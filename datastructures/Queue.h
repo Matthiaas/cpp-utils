@@ -9,7 +9,10 @@
 #include <vector>
 #include <array>
 
-template <typename T, size_t buff_size = 20, size_t begin_map_size = 5 >
+// buff_size should be large (20-30) for small types like ints
+// buff_size should be small (5) for large types >= 5KB
+
+template <typename T, size_t buff_size = 20>
 class Queue {
 public:
     Queue() {
@@ -99,10 +102,11 @@ public:
 
 private:
     T** map;
-    std::pair<size_t ,size_t> begin = {begin_map_size/2,0};
-    std::pair<size_t, size_t> end = {begin_map_size/2, 0};
+    int map_size = 5;
+    std::pair<size_t ,size_t> begin = {0,0};
+    std::pair<size_t, size_t> end = {0, 0};
     int count = 0;
-    int map_size = begin_map_size;
+
 
 
     void shiftToZero(T** old_map) {
