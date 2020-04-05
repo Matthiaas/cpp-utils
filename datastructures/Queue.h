@@ -18,11 +18,47 @@ public:
     }
 
     ~Queue() {
+        if(begin.first > end.first){
+            // The content was moved, no need to free up here.
+            return;
+        }
         for(int i = begin.first; i <= end.first; i++) {
             free(map[i]);
         }
         free(map);
     }
+
+    Queue(const Queue& q) {
+        begin = q.begin;
+        end = q.end;
+        count = q.count;
+        map_size = q.map_size;
+
+        map = (T**)  malloc(sizeof(T*) * map_size);
+        for(int i = begin.first; i <= end.first; i++) {
+            map[i] = (T*) malloc(sizeof(T) * buff_size);
+            T* newData = map[i];
+            T* oldData = q.map[i];
+            for (int j = 0; j < buff_size; j++) {
+                newData[j] = oldData[j];
+            }
+        }
+
+
+    }
+
+    Queue(Queue&& q) {
+        begin = q.begin;
+        end = q.end;
+        map = q.map;
+        count = q.count;
+        map_size = q.map_size;
+
+        // Invalidate old Queue so no free is called again.
+        q.begin.first = 1;
+        q.end.first = 0;
+    }
+
 
     void push(const T& v) {
         map[end.first][end.second] = v;
