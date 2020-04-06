@@ -17,8 +17,8 @@ public:
     // Constructors
     Queue();
     ~Queue();
-    Queue(const Queue& q);
-    Queue(Queue&& q);
+    Queue(const Queue<T,buff_size>& q);
+    Queue(Queue<T,buff_size>&& q);
 
     // Member Fuctions
     template<typename ...Args>
@@ -69,7 +69,7 @@ inline Queue<T,buff_size>::~Queue() {
 }
 
 template <typename T, size_t buff_size>
-inline Queue<T,buff_size>::Queue(const Queue& q) {
+inline Queue<T,buff_size>::Queue(const Queue<T,buff_size>& q) {
     begin = q.begin;
     end = q.end;
     count = q.count;
@@ -87,7 +87,7 @@ inline Queue<T,buff_size>::Queue(const Queue& q) {
 }
 
 template <typename T, size_t buff_size>
-inline Queue<T,buff_size>::Queue(Queue&& q) {
+inline Queue<T,buff_size>::Queue(Queue<T,buff_size>&& q) {
     begin = q.begin;
     end = q.end;
     map = q.map;

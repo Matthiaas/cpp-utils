@@ -5,48 +5,47 @@
 #ifndef UTILS_PARALLEL_QUEUE_H
 #define UTILS_PARALLEL_QUEUE_H
 
-#include <mutex>
+#include "Guard.h"
 #include "../datastructures/Queue.h"
 
+// Actually this class is totally useless since we could directly use Guarded<Queue<T>>.
 template <typename T>
 class ParallelQueue {
 public:
     void push(const T& v) {
-        std::lock_guard<std::mutex> g(m);
-        q.push(v);
+        Guarded<Queue<T>> gq = qGuard.getGuarded();
+        gq->push(v);
     }
     void push(T&& v) {
-        std::lock_guard<std::mutex> g(m);
-        q.push(v);
+        Guarded<Queue<T>> gq = qGuard.getGuarded();
+        gq->push(v);
     }
     const T& front() const {
-        std::lock_guard<std::mutex> g(m);
-        return q.front();
+        Guarded<Queue<T>> gq = qGuard.getGuarded();
+        return gq->front();
     }
 
     T& front() {
-        std::lock_guard<std::mutex> g(m);
-        return q.front();
+        Guarded<Queue<T>> gq = qGuard.getGuarded();
+        return gq->q.front();
     }
 
     void pop() {
-        std::lock_guard<std::mutex> g(m);
-        q.pop();
+        Guarded<Queue<T>> gq = qGuard.getGuarded();
+        gq->pop();
     }
 
     bool empty() const {
-        std::lock_guard<std::mutex> g(m);
-        return q.empty();
+        Guarded<Queue<T>> gq = qGuard.getGuarded();
+        return gq->empty();
     }
 
     size_t size() const {
-        std::lock_guard<std::mutex> g(m);
-        return q.size();
+        Guarded<Queue<T>> gq = qGuard.getGuarded();
+        return->size();
     };
 private:
-
-    Queue<T> q;
-    std::mutex m;
+    Guard<Queue<T>> qGuard;
 };
 
 
