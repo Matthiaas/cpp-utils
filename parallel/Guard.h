@@ -12,7 +12,7 @@ template <typename T>
 class Guarded {
 public:
     Guarded(const Guarded<T>&) = delete;
-    Guarded(Guarded<T>&&);
+    Guarded(Guarded<T>&&) noexcept;
     Guarded(T* obj, std::mutex* mutex) : obj_(obj), mutex_(mutex) {};
     ~Guarded();
 
@@ -24,7 +24,7 @@ private:
 };
 
 template<typename T>
-Guarded<T>::Guarded(Guarded<T> &&g) : obj_(g.obj_), mutex_(g.mutex_){
+Guarded<T>::Guarded(Guarded<T> &&g) noexcept: obj_(g.obj_), mutex_(g.mutex_) {
     g.mutex_ = nullptr;
 }
 

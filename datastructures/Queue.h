@@ -18,7 +18,7 @@ public:
     Queue();
     ~Queue();
     Queue(const Queue<T,buff_size>& q);
-    Queue(Queue<T,buff_size>&& q);
+    Queue(Queue<T,buff_size>&& q) noexcept;
 
     // Member Fuctions
     template<typename ...Args>
@@ -87,7 +87,7 @@ inline Queue<T,buff_size>::Queue(const Queue<T,buff_size>& q) {
 }
 
 template <typename T, size_t buff_size>
-inline Queue<T,buff_size>::Queue(Queue<T,buff_size>&& q) {
+inline Queue<T,buff_size>::Queue(Queue<T,buff_size>&& q) noexcept {
     begin = q.begin;
     end = q.end;
     map = q.map;

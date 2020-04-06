@@ -3,4 +3,6 @@ project(utils)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(utils main.cpp parallel/ParallelQueue.h datastructures/Queue.cpp datastructures/Queue.h datastructures/Deque.cpp datastructures/Deque.h parallel/Guard.h)
+add_executable(utils main.cpp datastructures/Queue.cpp datastructures/Queue.h datastructures/Deque.cpp datastructures/Deque.h parallel/Guard.h parallel/ThreadPoolExecutor.cpp parallel/ThreadPoolExecutor.h)
+
+target_link_libraries(utils pthread)
