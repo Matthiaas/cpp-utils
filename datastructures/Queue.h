@@ -14,28 +14,39 @@
 template <typename T, size_t buff_size = 20>
 class Queue {
 public:
+    // Constructors
     Queue();
     ~Queue();
     Queue(const Queue& q);
     Queue(Queue&& q);
 
+    // Member Fuctions
     template<typename ...Args>
     void emplace(Args && ...args);
     void push(const T& v);
     void push(T&& v);
-    const T& front() const;
-    T& front();
     void pop();
-    bool empty() const;
-    size_t size() const;
+    void swap(Queue<T,buff_size>& other);
+
+    [[nodiscard]] const T& front() const;
+    [[nodiscard]] T& front();
+
+    [[nodiscard]] bool empty() const;
+    [[nodiscard]] size_t size() const;
+
+    //Non-Member Functions
+    template<class U, size_t buff_size_l, size_t buff_size_r>
+    friend bool operator==(const Queue<U, buff_size_l>& lhs, const Queue<U, buff_size_r>& rhs);
 
 private:
+    // Member Variables
     T** map;
     int map_size = 5;
     std::pair<size_t ,size_t> begin = {0,0};
     std::pair<size_t, size_t> end = {0, 0};
     int count = 0;
 
+    //
     void shiftToZero(T** old_map);
     void increaseEndCounter();
     void resize(int newSize);
@@ -45,7 +56,7 @@ private:
 
 template <typename T, size_t buff_size>
 inline Queue<T,buff_size>::Queue() {
-    map = (T**)  malloc(sizeof(T*) * map_size);
+    map = (T**) malloc(sizeof(T*) * map_size);
     map[end.first] = (T*) malloc(sizeof(T) * buff_size);
 }
 
@@ -130,7 +141,15 @@ inline void Queue<T,buff_size>::pop() {
         free(map[begin.first]);
         begin.first++;
     }
+}
 
+template <typename T, size_t buff_size>
+void Queue<T,buff_size>::swap(Queue<T,buff_size>& other) {
+    begin.swap(other.begin);
+    end.swap(other.end);
+    std::swap(count, other.count);
+    std::swap(map_size, other.map_size);
+    std::swap(map, other.map);
 }
 
 template <typename T, size_t buff_size>
@@ -142,12 +161,6 @@ template <typename T, size_t buff_size>
 inline size_t Queue<T,buff_size>::size() const {
     return count;
 };
-
-
-
-
-
-
 
 template <typename T, size_t buff_size>
 void Queue<T,buff_size>::shiftToZero(T** old_map) {
@@ -197,5 +210,30 @@ inline void Queue<T,buff_size>::maybeFreeUpSpace() {
 }
 
 
+template <typename U, size_t buff_size_l, size_t buff_size_r>
+bool operator==(const Queue<U, buff_size_l>& lhs, const Queue<U, buff_size_r>& rhs) {
+    if (lhs.size() != rhs.size()) {
+        return false;
+    }
+    int lf = lhs.begin.first;
+    int ls = lhs.begin.second;
+    int rf = lhs.begin.first;
+    int rs = lhs.begin.second;
+
+    while (lf != lhs.end.first && ls != lhs.end.second) {
+        if (lhs.map[lf][ls] != rhs.map[rf][rs]) {
+            return false;
+        }
+        ls = (ls + 1) % buff_size_l;
+        rs = (rs + 1) % buff_size_r;
+        if(ls == 0) {
+            lf++;
+        }
+        if(rs == 0) {
+            rf++;
+        }
+    }
+    return true;
+}
 
 #endif //UTILS_QUEUE_H
