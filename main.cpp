@@ -9,13 +9,13 @@
 
 using namespace std::chrono;
 
-using data_type = std::array<long,10000>;
+using data_type = std::array<long,10>;
 
 int main() {
 
 
 
-    int N = 10000;
+    int N = 10000000;
     // Should be between 1 and 100;
     int push_threshold = 70;
     data_type data;
@@ -57,7 +57,7 @@ int main() {
             system_clock::now().time_since_epoch()
     );
     {
-        Queue<data_type,5> q;
+        Queue<data_type,20> q;
         for(int i = 0; i< arr.size(); i++) {
             int r = arr[i];
             if(r < push_threshold) {
