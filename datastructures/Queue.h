@@ -20,10 +20,6 @@ public:
     }
 
     ~Queue() {
-        if(begin.first > end.first){
-            // The content was moved, no need to free up here.
-            return;
-        }
         for(int i = begin.first; i <= end.first; i++) {
             free(map[i]);
         }
@@ -57,6 +53,7 @@ public:
         map_size = q.map_size;
 
         // Invalidate old Queue so no free is called again.
+        q.map = nullptr;
         q.begin.first = 1;
         q.end.first = 0;
     }
