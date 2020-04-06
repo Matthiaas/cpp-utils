@@ -5,9 +5,8 @@
 #ifndef UTILS_QUEUE_H
 #define UTILS_QUEUE_H
 
-
-#include <vector>
-#include <array>
+#include <cstdlib>
+#include <utility>
 
 // buff_size should be large (20-30) for small types like ints
 // buff_size should be small (5) for large types >= 5KB

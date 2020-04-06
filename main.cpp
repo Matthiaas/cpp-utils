@@ -2,6 +2,7 @@
 
 #include "datastructures/Queue.h"
 
+#include <array>
 #include <queue>
 #include <ctime>
 #include <cstdlib>

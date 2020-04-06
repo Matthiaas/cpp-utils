@@ -5,8 +5,8 @@
 #ifndef UTILS_DEQUE_H
 #define UTILS_DEQUE_H
 
-#include <vector>
-#include <array>
+#include <cstdlib>
+#include <utility>
 
 
 
