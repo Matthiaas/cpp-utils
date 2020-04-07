@@ -1,32 +1,21 @@
 #include <iostream>
 
 #include "datastructures/Queue.h"
+#include "parallel/ThreadPoolExecutor.h"
 
 #include <array>
 #include <queue>
 #include <ctime>
 #include <cstdlib>
 #include <chrono>
+#include <vector>
+
 
 using namespace std::chrono;
 
 using data_type = std::array<long,10>;
 
-int main() {
-
-
-
-    int N = 10000000;
-    // Should be between 1 and 100;
-    int push_threshold = 70;
-    data_type data;
-
-    std::vector<int>  arr;
-    std::srand(std::time(nullptr));
-    for(int i = 0; i< N; i++) {
-        arr.push_back(std::rand() % 100);
-    }
-
+int testStdQueue(std::vector<int>& arr, data_type& data, int push_threshold) {
     milliseconds start = duration_cast< milliseconds >(
             system_clock::now().time_since_epoch()
     );
@@ -48,13 +37,11 @@ int main() {
     milliseconds end = duration_cast< milliseconds >(
             system_clock::now().time_since_epoch()
     );
+    return (end - start).count();
+}
 
-
-
-    std::cout << (end - start).count() << std::endl;
-
-
-    start = duration_cast< milliseconds >(
+int testMyQueue(std::vector<int>& arr, data_type& data, int push_threshold) {
+    milliseconds start = duration_cast< milliseconds >(
             system_clock::now().time_since_epoch()
     );
     {
@@ -72,9 +59,44 @@ int main() {
             }
         }
     }
-    end = duration_cast< milliseconds >(
+    milliseconds end = duration_cast< milliseconds >(
             system_clock::now().time_since_epoch()
     );
-    std::cout << (end - start).count() << std::endl;
+    return (end - start).count();
+}
+
+void foo() {
+
+}
+
+int main() {
+
+
+
+    int N = 10000000;
+    // Should be between 1 and 100;
+    int push_threshold = 70;
+    data_type data;
+
+    std::vector<int>  arr;
+    std::srand(std::time(nullptr));
+    for(int i = 0; i< N; i++) {
+        arr.push_back(std::rand() % 100);
+    }
+
+
+    ThreadPoolExecutor<int> tpe(2);
+    std::future<int> f1 = tpe.execute(std::bind(testStdQueue, arr, data, push_threshold));
+    std::future<int> f2 = tpe.execute(std::bind(testMyQueue, arr, data, push_threshold));
+    std::future<int> f3 = tpe.execute(std::bind(testStdQueue, arr, data, push_threshold));
+    std::future<int> f4 = tpe.execute(std::bind(testMyQueue, arr, data, push_threshold));
+    tpe.shutDownNow();
+    tpe.join();
+    std::cout << f1.get() << std::endl;
+    std::cout << f2.get() << std::endl;
+    std::cout << (f3.wait_for(std::chrono::seconds(0)) == std::future_status::ready ) << std::endl;
+    std::cout << (f4.wait_for(std::chrono::seconds(0)) == std::future_status::ready)  << std::endl;
+
+
     return 0;
 }

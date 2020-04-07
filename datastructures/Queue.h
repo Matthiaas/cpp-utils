@@ -104,23 +104,19 @@ inline Queue<T,buff_size>::Queue(Queue<T,buff_size>&& q) noexcept {
 template <typename T, size_t buff_size>
 template<typename ...Args>
 void inline Queue<T,buff_size>::emplace(Args && ...args) {
-    map[end.first][end.second] = std::move(T(std::forward<T>(args) ...));
+    ::new((void *) &map[end.first][end.second]) T(std::forward<Args>(args)...);
     count++;
     increaseEndCounter();
 }
 
 template <typename T, size_t buff_size>
 void inline Queue<T,buff_size>::push(const T& v) {
-    map[end.first][end.second] = v;
-    count++;
-    increaseEndCounter();
+    emplace(v);
 }
 
 template <typename T, size_t buff_size>
 void inline Queue<T,buff_size>::push(T&& v) {
-    map[end.first][end.second] = std::forward<T>(v);
-    count++;
-    increaseEndCounter();
+    emplace(std::forward<T>(v));
 }
 
 template <typename T, size_t buff_size>
