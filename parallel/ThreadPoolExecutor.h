@@ -60,11 +60,12 @@ ThreadPoolExecutor<T>::ThreadPoolExecutor(size_t size) : online_threads_(size) {
 
 template <typename T>
 std::future<T> ThreadPoolExecutor<T>::execute(ThreadPoolExecutor::Task f) {
-    std::unique_lock<std::mutex> lck(mutex_);
     std::promise<T> promise;
     std::future<T> result_future = promise.get_future();
-    task_promise_queue_.push(make_tuple(f, std::move(promise)));
-    lck.unlock();
+    {
+        std::lock_guard<std::mutex> lck(mutex_);
+        task_promise_queue_.push(make_tuple(f, std::move(promise)));
+    }
     cv_.notify_one();
     return result_future;
 }
@@ -105,7 +106,7 @@ void ThreadPoolExecutor<T>::shutDownNow() {
 
 template <typename T>
 bool ThreadPoolExecutor<T>::shutDownCompleted() {
-
+    std::lock_guard<std::mutex> lck(mutex_);
     return online_threads_ == 0;
 }
 
