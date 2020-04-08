@@ -45,6 +45,7 @@ private:
     bool shutdown_ = false;
     bool shutdownNow_ = false;
     size_t online_threads_;
+
     void threadRoutine();
 };
 

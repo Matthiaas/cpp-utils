@@ -63,6 +63,11 @@ inline Queue<T,buff_size>::Queue() {
 template <typename T, size_t buff_size>
 inline Queue<T,buff_size>::~Queue() {
     for(int i = begin.first; i <= end.first; i++) {
+        for(int j = 0; j < buff_size; j ++) {
+            if((i != begin.first || j >= begin.second) && (i != end.first || j < end.second)){
+                map[i][j].T::~T();
+            }
+        }
         free(map[i]);
     }
     free(map);
@@ -74,7 +79,6 @@ inline Queue<T,buff_size>::Queue(const Queue<T,buff_size>& q) {
     end = q.end;
     count = q.count;
     map_size = q.map_size;
-
     map = (T**)  malloc(sizeof(T*) * map_size);
     for(int i = begin.first; i <= end.first; i++) {
         map[i] = (T*) malloc(sizeof(T) * buff_size);
