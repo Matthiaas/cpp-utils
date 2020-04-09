@@ -7,6 +7,8 @@
 
 #include <functional>
 #include <list>
+#include <cmath>
+
 
 template <class T, class Compare = std::less<T>>
 class FibonacciHeap {
@@ -51,6 +53,7 @@ private:
     void deleteList(List l);
     Node* merge(Node*, Node*);
 
+    const double log_golden_ration = std::log((1+sqrt(5))/2);
 
     List roots = {nullptr, nullptr};
     Node* min;
@@ -58,7 +61,7 @@ private:
 };
 
 template<class T, class Compare>
-FibonacciHeap<T, Compare>::~FibonacciHeap() {
+inline FibonacciHeap<T, Compare>::~FibonacciHeap() {
     deleteList(roots);
 }
 
@@ -79,18 +82,18 @@ inline const T& FibonacciHeap<T, Compare>::top() const {
 }
 
 template<class T, class Compare>
-void FibonacciHeap<T, Compare>::push(const T& v) {
+inline void FibonacciHeap<T, Compare>::push(const T& v) {
     emplace(v);
 }
 
 template<class T, class Compare>
-void FibonacciHeap<T, Compare>::push(T&& v) {
+inline void FibonacciHeap<T, Compare>::push(T&& v) {
     emplace(std::forward<T>(v));
 }
 
 template<class T, class Compare>
 template<typename... Args>
-void FibonacciHeap<T, Compare>::emplace(Args &&... args) {
+inline void FibonacciHeap<T, Compare>::emplace(Args &&... args) {
     // TODO: Consutuct in place to make this work with complex types!
     T v = T(args ...);
     Node* new_root_node = new Node{v, nullptr, nullptr, List {nullptr, nullptr} , 0};
@@ -106,33 +109,36 @@ void FibonacciHeap<T, Compare>::pop() {
     count--;
     // Remove min node:
     removeRootNode(min);
+    // Add children to main list.
+    appendList(min->children);
     delete min;
     if(count == 0) {
         return;
     }
-    // Add children to main list.
-    appendList(min->children);
+
     Node* cur_min = roots.head;
 
-    std::vector<Node*> nodeDegree(100, nullptr);
-    for (Node* cur = roots.head; cur != nullptr; cur =  cur->next) {
+    std::vector<Node*> nodeDegree(std::floor(std::log(count) / log_golden_ration) + 1, nullptr);
+    Node* cur = roots.head;
+    while (cur != nullptr) {
         int degree = cur->degree;
-        Node* n = cur;
+        Node* next = cur->next;
         while(nodeDegree[degree]){
-            n = merge(n, nodeDegree[degree]);
+            cur = merge(cur, nodeDegree[degree]);
             nodeDegree[degree] = nullptr;
             degree++;
         }
-        nodeDegree[degree] = n;
-        if (less(n->value, cur_min->value)) {
-            cur_min = n;
+        nodeDegree[degree] = cur;
+        if (!less(cur_min->value, cur->value)) {
+            cur_min = cur;
         }
+        cur =  next;
     }
     min = cur_min;
 }
 
 template<class T, class Compare>
-typename FibonacciHeap<T, Compare>::Node* FibonacciHeap<T, Compare>::merge(Node* n1, Node* n2) {
+inline typename FibonacciHeap<T, Compare>::Node* FibonacciHeap<T, Compare>::merge(Node* n1, Node* n2) {
     if(less(n2->value, n1->value)) {
         std::swap(n1,n2);
     }
@@ -162,7 +168,7 @@ inline void FibonacciHeap<T, Compare>::removeRootNode(FibonacciHeap::Node* n) {
 }
 
 template<class T, class Compare>
-void FibonacciHeap<T, Compare>::appendNode(List& l, Node* n) {
+inline void FibonacciHeap<T, Compare>::appendNode(List& l, Node* n) {
     if(l.head != nullptr) {
         n->prev = l.tail;
         l.tail->next = n;
@@ -174,16 +180,32 @@ void FibonacciHeap<T, Compare>::appendNode(List& l, Node* n) {
 }
 
 template<class T, class Compare>
-void FibonacciHeap<T, Compare>::appendList(List l) {
+inline void FibonacciHeap<T, Compare>::appendList(List l) {
     if (roots.head == nullptr) {
         roots = l;
     } else if (l.head != nullptr) {
-        roots.tail->next = min->children.head;
-        roots.tail = min->children.tail;
+        l.head->prev = roots.tail;
+        roots.tail->next = l.head;
+        roots.tail = l.tail;
     }
 }
 
+template<class T, class Compare>
+inline bool FibonacciHeap<T, Compare>::empty() {
+    return count == 0;
+}
 
+template<class T, class Compare>
+inline size_t FibonacciHeap<T, Compare>::size() {
+    return count;
+}
+
+template<class T, class Compare>
+void FibonacciHeap<T, Compare>::swap(FibonacciHeap<T> other) {
+    std::swap(count, other.count);
+    std::swap(roots, other.roots);
+    std::swap(min, other.min);
+}
 
 
 #endif //UTILS_FIBONACCIHEAP_H

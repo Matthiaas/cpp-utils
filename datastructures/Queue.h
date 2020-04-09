@@ -136,6 +136,7 @@ inline T& Queue<T,buff_size>::front() {
 template <typename T, size_t buff_size>
 inline void Queue<T,buff_size>::pop() {
     count--;
+    map[begin.first][begin.second].T::~T();
     begin.second = (begin.second + 1) % buff_size;
     if(begin.second == 0) {
         free(map[begin.first]);
